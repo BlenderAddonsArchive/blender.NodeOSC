@@ -272,31 +272,31 @@ def call_format(address, data_path, prop_ignore, attrIdx, oscArgs, oscIndex, sFo
             addedError.value =  msg
 
         #  ... and don't forget the corner case
-        if isinstance(f_OscIndex, int): 
+        if isinstance(f_OscIndex, int):
             f_OscIndex = (f_OscIndex,)
         # now we have to analyse the data_path to figure out how we have to apply the values
-        if f_data_path.find('][') != -1 and (f_data_path[-2:] == '"]' or f_data_path[-2:] == '\']'):
-            #For custom properties 
+        if f_data_path.find('=') != -1:
+            # its a statement call (check before bracket patterns since assignment paths may end with ])
+            prop = ''
+            OSC_callback_statement(address, f_data_path, prop, attrIdx, oscArgs, f_OscIndex)
+        elif f_data_path.find('][') != -1 and (f_data_path[-2:] == '"]' or f_data_path[-2:] == '\']'):
+            #For custom properties
             #   like bpy.data.objects['Cube']['customProp']
             prop = f_data_path[f_data_path.rindex('['):]
             prop = prop[2:-2] # get rid of [' ']
             datapath = f_data_path[0:f_data_path.rindex('[')]
             OSC_callback_custom(address, eval(datapath), prop, attrIdx, oscArgs, f_OscIndex)
         elif f_data_path[-1] == ']':
-            #For normal properties with index in brackets 
+            #For normal properties with index in brackets
             #   like bpy.data.objects['Cube'].location[0]
             datapath = f_data_path[0:f_data_path.rindex('.')]
             prop =  f_data_path[f_data_path.rindex('.') + 1:f_data_path.rindex('[')]
             prop_index =  f_data_path[f_data_path.rindex('[') + 1:f_data_path.rindex(']')]
             OSC_callback_IndexedProperty(address, eval(datapath), prop, int(prop_index), oscArgs, f_OscIndex)
         elif f_data_path[-1] == ')' :
-            # its a function call 
+            # its a function call
             prop = ''
             OSC_callback_function(address, f_data_path, prop, attrIdx, oscArgs, f_OscIndex)
-        elif f_data_path.find('=') != -1:
-            # its a statement call 
-            prop = ''
-            OSC_callback_statement(address, f_data_path, prop, attrIdx, oscArgs, f_OscIndex)
         else:
             #without index in brackets
             datapath = f_data_path[0:f_data_path.rindex('.')]

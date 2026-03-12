@@ -1,4 +1,4 @@
-# NodeOSC 2.4.1
+# NodeOSC 2.4.2
 OSC support for nodes and general usage.
 
 This add-on does not require any other add-on to work.

@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # needed to create the Release
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set bl_info version from tag
+        run: |
+          # Tag like v2.4.2 -> 2.4.2 -> (2, 4, 2)
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          echo "Tag version: $TAG_VERSION"
+          # The git tag is the single source of truth: rewrite bl_info["version"]
+          # in __init__.py so the version Blender shows always matches the release.
+          python3 - "$TAG_VERSION" <<'PY'
+          import re, sys
+
+          tag = sys.argv[1]
+          if not re.fullmatch(r"\d+(\.\d+)*", tag):
+              sys.exit(f"::error::Tag version '{tag}' is not a dotted numeric version (e.g. v2.4.2).")
+          version_tuple = "(" + ", ".join(tag.split(".")) + ")"
+
+          path = "__init__.py"
+          src = open(path, encoding="utf-8").read()
+          new_src, n = re.subn(
+              r"(\"version\"\s*:\s*)\([^)]*\)",
+              lambda m: m.group(1) + version_tuple,
+              src,
+              count=1,
+          )
+          if n != 1:
+              sys.exit("::error::Could not find bl_info[\"version\"] in __init__.py")
+          open(path, "w", encoding="utf-8").write(new_src)
+          print(f'Set bl_info["version"] = {version_tuple}')
+          PY
+
+      - name: Build addon zip
+        run: |
+          # Stage the addon inside a folder so Blender installs it correctly
+          mkdir -p build/NodeOSC
+          # Copy source files, excluding dev/test cruft
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.vscode' \
+            --exclude='.vs' \
+            --exclude='.idea' \
+            --exclude='__pycache__' \
+            --exclude='*.blend' \
+            --exclude='*.blend1' \
+            --exclude='.DS_Store' \
+            --exclude='build' \
+            ./ build/NodeOSC/
+          cd build
+          zip -r "NodeOSC-${GITHUB_REF_NAME}.zip" NodeOSC
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/NodeOSC-${{ github.ref_name }}.zip
+          generate_release_notes: true   # auto changelog from merged PRs/commits

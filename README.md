@@ -1,4 +1,7 @@
-# NodeOSC 2.4.2
+# NodeOSC
+
+[![Latest release](https://img.shields.io/github/v/release/maybites/NodeOSC?label=version&sort=semver)](https://github.com/maybites/NodeOSC/releases/latest)
+
 OSC support for nodes and general usage.
 
 This add-on does not require any other add-on to work.
@@ -9,11 +12,11 @@ Currently it has node support for
 
 ## Download
 
-latest release from [here](https://github.com/maybites/blender.NodeOSC/releases/latest)
+latest release from [here](https://github.com/maybites/NodeOSC/releases/latest)
 
 ## Usage
 
-please visit the [wiki](https://github.com/maybites/blender.NodeOSC/wiki) for more info.
+please visit the [wiki](https://github.com/maybites/NodeOSC/wiki) for more info.
 
 ### Video Tutorial
 

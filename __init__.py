@@ -35,8 +35,8 @@ bl_info = {
     "blender": (2, 80, 0),
     "location": "View3D > Tools > NodeOSC",
     "description": "Realtime control of Blender using OSC data protocol",
-    "wiki_url": "https://github.com/maybites/blender.NodeOSC/wiki",
-    "tracker_url": "https://github.com/maybites/blender.NodeOSC/issues",
+    "wiki_url": "https://github.com/maybites/NodeOSC/wiki",
+    "tracker_url": "https://github.com/maybites/NodeOSC/issues",
     "support": "COMMUNITY",
     "category": "System"}
 
